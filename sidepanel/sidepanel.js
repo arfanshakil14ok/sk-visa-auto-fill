@@ -1,5 +1,8 @@
 // Universal Pro Suite Logic for VisaFill AI
 
+// Default Cloudflare Worker Proxy URL (Auto-used if no custom URL or key is entered)
+const DEFAULT_CLOUD_PROXY_URL = "";
+
 const elements = {
   // Navigation
   mainNavTabs: document.querySelectorAll('.nav-tab'),
@@ -141,13 +144,14 @@ async function loadSettings() {
   if (result.geminiApiKey) {
     elements.apiKey.value = result.geminiApiKey;
   }
-  if (result.proxyUrl) {
-    elements.proxyUrl.value = result.proxyUrl;
+  const effectiveProxy = result.proxyUrl || DEFAULT_CLOUD_PROXY_URL;
+  if (effectiveProxy) {
+    elements.proxyUrl.value = effectiveProxy;
   }
   elements.toggleFloatingBtn.checked = result.enableFloatingBtn !== false;
   elements.toggleSitePresets.checked = result.enableSitePresets !== false;
 
-  updateEngineBadge(result.geminiApiKey, result.proxyUrl);
+  updateEngineBadge(result.geminiApiKey, effectiveProxy);
 
   if (result.activeApplicant) {
     fillDetailsForm(result.activeApplicant);
@@ -155,10 +159,11 @@ async function loadSettings() {
 }
 
 function updateEngineBadge(apiKey, proxyUrl) {
+  const effectiveProxy = proxyUrl || DEFAULT_CLOUD_PROXY_URL;
   if (apiKey) {
     elements.activeEngineBadge.textContent = "Personal Key 🔑";
     elements.activeEngineBadge.style.color = "#2563eb";
-  } else if (proxyUrl) {
+  } else if (effectiveProxy) {
     elements.activeEngineBadge.textContent = "Cloud Backend ⚡";
     elements.activeEngineBadge.style.color = "#059669";
   } else {
@@ -297,8 +302,9 @@ function resetPassportUpload() {
 // Passport Data Extraction (Hybrid: Direct Gemini or Cloud Backend Proxy)
 async function extractPassportData() {
   const { geminiApiKey, proxyUrl } = await chrome.storage.local.get(['geminiApiKey', 'proxyUrl']);
+  const effectiveProxy = proxyUrl || DEFAULT_CLOUD_PROXY_URL;
   
-  if (!geminiApiKey && !proxyUrl) {
+  if (!geminiApiKey && !effectiveProxy) {
     elements.settingsSection.classList.remove('hidden');
     alert('Please enter your Production Cloud Backend URL or personal Gemini API Key in the settings (⚙️).');
     return;
@@ -375,7 +381,7 @@ Return ONLY valid JSON matching this schema without any markdown formatting or b
       });
     } else {
       // Production Cloud Proxy call (Users need NO API key!)
-      const targetUrl = proxyUrl.endsWith('/') ? proxyUrl : `${proxyUrl}/`;
+      const targetUrl = effectiveProxy.endsWith('/') ? effectiveProxy : `${effectiveProxy}/`;
       response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
