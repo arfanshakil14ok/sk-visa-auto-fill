@@ -10,7 +10,7 @@ Once deployed, **users of your extension will NEVER need to enter any Gemini API
 ### Method A: Automated GitHub Actions (Auto-Deploy on `git push`)
 Every time you push changes to GitHub, GitHub Actions will automatically deploy your worker to Cloudflare!
 
-1. Open your repository on GitHub: `https://github.com/arfanshakil14ok/visa-auto-fill`
+1. Open your repository on GitHub: `https://github.com/arfanshakil14ok/sk-visa-auto-fill`
 2. Go to **Settings** -> **Secrets and variables** -> **Actions** -> Click **"New repository secret"**.
 3. Add the following repository secrets:
    - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API Token (from [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) with **Edit Cloudflare Workers** template).
@@ -63,7 +63,7 @@ npx wrangler deploy
 
 ## 🌐 Option 2: Deploy with Vercel (Alternative)
 
-1. Go to [vercel.com](https://vercel.com/) and import your GitHub repository: `arfanshakil14ok/visa-auto-fill`.
+1. Go to [vercel.com](https://vercel.com/) and import your GitHub repository: `arfanshakil14ok/sk-visa-auto-fill`.
 2. Under **Root Directory**, specify `backend-proxy` (or let it auto-detect).
 3. In **Environment Variables**, add:
    - `GEMINI_API_KEY` = `<Your Gemini API Key>`
